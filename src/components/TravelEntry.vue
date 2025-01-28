@@ -3,6 +3,7 @@ import {ref} from "vue";
 import type {TravelEntry} from '@/types/models'
 const props = defineProps<{
   entry: array<FoodEntry>
+
 }>()
 
 const showEntry = ref(false)

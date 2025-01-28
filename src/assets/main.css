@@ -36,6 +36,8 @@ a {
 
 .button1 {
   display: inline-block;
+  width: 150px;
+  height: 140px;
   outline: 0;
   border:0;
   cursor: pointer;
@@ -140,4 +142,15 @@ a {
   line-height: 1.5;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+.like-button {
+  background-color: lightgray;
+  color: black;
+}
+
+.like-button.liked {
+  background-color: green;
+  color: white;
+}
+
 
