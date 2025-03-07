@@ -5,7 +5,6 @@ export type TravelEntry = {
     activities: Array<Activities>,
     food: Array<Food>,
     packList: Array<PackList>,
-    hotels: Array<Hotels>,
 }
 
 type ActivitiesOption = "walking" | "beach" | "park" | "shopping" | "sightseeing" | "spa" | ""

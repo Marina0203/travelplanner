@@ -3,6 +3,8 @@
 import {ref} from "vue";
 import type {Activities, Food, TravelEntry, PackList} from '@/types/models'
 import TravelElement from '@/components/TravelEntry.vue'
+import {computed} from "vue";
+import TravelEntryForm from "@/components/TravelEntryForm.vue";
 
 // Reactive variables
 const showForm = ref(false);
@@ -15,10 +17,7 @@ const newTravelEntry = ref<TravelEntry>({
   activities: [],
   food: [],
   packList: [],
-  hotels: [],
 });
-const error = ref('')
-const entryCreated = ref(false);
 const showActivitiesInput = ref(false);
 const activities = ref<Activities>({
   name: '',
@@ -37,20 +36,45 @@ const packList = ref<PackList>({
   type: '',
   checked: false,
 });
-const showHotelsInput = ref(false);
-const hotels = ref({
-  name: '',
-  address: '',
-  checkin: '',
-  checkout: '',
-});
 const currentEntryIndex = ref(-1);
 const isEditing = ref(false);
 const currentStep = ref(1);
+const sortedActivities = computed(() => {
+  return newTravelEntry.value.activities.slice().sort((a, b) => {
+    // Sort by category (type)
+    const categoryComparison = a.type.localeCompare(b.type);
+    if (categoryComparison !== 0) return categoryComparison;
+
+    // If categories are the same, sort by name
+    return a.name.localeCompare(b.name);
+  });
+});
+const sortedFood = computed(() => {
+  return newTravelEntry.value.food.slice().sort((a, b) => {
+    // Sort by type first
+    const typeComparison = a.type.localeCompare(b.type);
+    if (typeComparison !== 0) return typeComparison;
+
+    // If types are the same, sort by name
+    return a.name.localeCompare(b.name);
+  });
+});
+const sortedPackList = computed(() => {
+  return newTravelEntry.value.packList.slice().sort((a, b) => {
+    // Sort by type first
+    const typeComparison = a.type.localeCompare(b.type);
+    if (typeComparison !== 0) return typeComparison;
+
+    // If types are the same, sort by name
+    return a.name.localeCompare(b.name);
+  });
+});
+
 
 function goToStep(step: number) {
   currentStep.value = step;
 }
+
 // Function to retrieve all travel entries from localStorage
 function loadTravelEntries() {
   const storedEntries = localStorage.getItem('travelEntries');
@@ -72,8 +96,19 @@ function toggleTravelEntryTypeSelection() {
 
 }
 
+
+
+function resetNewEntry() {
+  newTravelEntry.value = {
+    type: '',
+    country: '',
+    city: '',
+    activities: [],
+    food: [],
+    packList: [],
+  };
+}
 function createEntry() {
-  isEditing.value = false;
   // Get existing entries from localStorage
   const existingEntries = localStorage.getItem('travelEntries');
 
@@ -95,30 +130,25 @@ function createEntry() {
     // Load Entries again from LocalStorage
     loadTravelEntries();
     resetNewEntry();
-
-    // Clear error
-    error.value = ''
-
-    console.log('Entry added:', newTravelEntry.value);
   } else {
     console.log('Entry already exists');
   }
-  showForm.value = false;
 }
-
-function resetNewEntry() {
-  newTravelEntry.value = {
+function addFoodItem() {
+  if (!food.value.name || !food.value.type) {
+    return;
+  }
+  newTravelEntry.value.food.push({
+    name: food.value.name,
+    type: food.value.type,
+    liked: false,
+  });
+  food.value = {
+    name: '',
     type: '',
-    country: '',
-    city: '',
-    activities: [],
-    food: [],
-    packList: [],
-    hotels: [],
+    liked: false,
   };
 }
-
-
 
 function editEntry(index: number) {
   // Retrieve entry with given index from travelEntries array and assign it to newTravelEntry
@@ -127,6 +157,7 @@ function editEntry(index: number) {
   currentEntryIndex.value = index;
   isEditing.value = true;
 }
+
 function deleteEntry(index: number) {
   // Remove the entry from the travelEntries array
   travelEntries.value.splice(index, 1);
@@ -197,6 +228,10 @@ function addActivityItem() {
   };
 }
 
+function deleteActivityItem(index: number) {
+  newTravelEntry.value.activities.splice(index, 1);
+}
+
 function addPackListItem() {
   if (!packList.value.name || !packList.value.type) {
     return;
@@ -220,27 +255,14 @@ function addPackListItem() {
   };
 }
 
-function addHotelItem() {
-  if (!hotels.value.name || !hotels.value.address || !hotels.value.checkin || !hotels.value.checkout) {
-    return;
-  }
-  newTravelEntry.value.hotels.push({
-    name: hotels.value.name,
-    address: hotels.value.address,
-    checkin: hotels.value.checkin,
-    checkout: hotels.value.checkout,
-  });
-  hotels.value = {
-    name: '',
-    address: '',
-    checkin: '',
-    checkout: '',
-  };
+function deletePackListItem(index: number) {
+  newTravelEntry.value.packList.splice(index, 1);
 }
 
 function toggleActivityLike(index: number) {
   newTravelEntry.value.activities[index].liked = !newTravelEntry.value.activities[index].liked;
 }
+
 function toggleFoodLike(index: number) {
   newTravelEntry.value.food[index].liked = !newTravelEntry.value.food[index].liked;
 }
@@ -248,213 +270,74 @@ function toggleFoodLike(index: number) {
 function toggleFoodInput() {
   showFoodInput.value = !showFoodInput.value;
 }
+
 function toggleActivitiesInput() {
   showActivitiesInput.value = !showActivitiesInput.value;
 }
+
 function togglePackListInput() {
   showPackListInput.value = !showPackListInput.value;
 }
 
-function toggleHotelsInput() {
-  showHotelsInput.value = !showHotelsInput.value;
-}
 
 // Call the function when the component is mounted to load the entries
 loadTravelEntries();
 </script>
 
 <template>
-  <!-- This is the button to display the form for new entries -->
-  <div class="entry-btn">
-    <button v-if="!showForm && !showTravelEntryTypeSelection" @click="toggleTravelEntryTypeSelection" class="button1">Add Entry</button>
-  </div>
-  <div v-if="!showForm && showTravelEntryTypeSelection">
-    <button @click="newTravelEntry.type = 'Holidays'; showForm = true; showTravelEntryTypeSelection = false; resetNewEntry();" class="button1">Holidays</button>
-    <button @click="newTravelEntry.type = 'Weekend Trips'; showForm = true; showTravelEntryTypeSelection = false; resetNewEntry();" class="button1">Weekend Trips</button>
-    <button @click="toggleTravelEntryTypeSelection" class="button1">Close</button>
-  </div>
+  <div class="dark dark:bg-gray-800 dark:text-white w-full h-screen py-8">
+    <div class="container">
 
 
-  <!-- This is the hidden form to create a new entry -->
-  <div v-if="showForm && !showTravelEntryTypeSelection">
-    <form id="addEntry" @submit.prevent="createEntry">
-      <input v-model="newTravelEntry.type" type="text" name="type" placeholder="" class="titel" readonly>
-      <input v-model="newTravelEntry.country" type="text" name="country" placeholder="Country" class="titel" required>
-      <input v-model="newTravelEntry.city"  type="text" name="city" placeholder="City/Island" class="titel" required>
-      <h2>Activities</h2>
-      <div>
-        <button type="button" @click="showActivitiesInput = !showActivitiesInput">
-          {{ showActivitiesInput ? "Close" : "Add" }}
-        </button>
-        <ul v-if="showActivitiesInput">
-          <input v-model="activities.name" type="text" name="activity" placeholder="Activity Name"/>
-          <select v-model="activities.type">
-            <option disabled value="">Select Type</option>
-            <option value="Walking">Walking</option>
-            <option value="Beach">Beach</option>
-            <option value="Park">Park</option>
-            <option value="Shopping">Shopping</option>
-            <option value="Sightseeing">Sightseeing</option>
-            <option value="Spa">Spa</option>
-          </select>
-          <button type="button" @click="addActivityItem" class="add">Add</button>
-          <!-- Display Activities -->
-          <ul>
-            <li v-for="(item, index) in newTravelEntry.activities" :key="index">
-              <span>{{ item.name }} ({{ item.type }})</span>
-              <button @click="toggleActivityLike(index)" class="like-button">
-                {{ item.liked ? "Unlike" : "Like" }}
-              </button>
-            </li>
-          </ul>
-        </ul>
-      </div>
-      <h2>Food</h2>
-      <div>
-        <button type="button" @click="showFoodInput = !showFoodInput">
-          {{ showFoodInput ? "Close" : "Add" }}
-        </button>
-        <!-- List of Selected Food Items -->
-        <ul v-if="showFoodInput">
-          <input v-model="food.name" type="text" name="food" placeholder="Food"/>
-          <select v-model="food.type">
-            <option disabled value="">Select Type</option>
-            <option value="cafe">Cafe</option>
-            <option value="restaurant">Restaurant</option>
-            <option value="breakfast">Breakfast</option>
-            <option value="street food">Street Food</option>
-            <option value="supermarket">Supermarket</option>
-          </select>
-          <button type="button" @click="addFoodItem" class="add">Add</button>
-          <!-- Display Food Items -->
-          <ul style="margin-top: 2rem;">
-            <li v-for="(item, index) in newTravelEntry.food" :key="index">
-              <span>{{ item.name }} ({{ item.type }})</span>
-              <button @click="toggleFoodLike(index)" class="like-button">
-                {{ item.liked ? "Unlike" : "Like" }}
-              </button>
-              <button @click="deleteFoodItem(index)">Delete</button>
-            </li>
-          </ul>
-        </ul>
-      </div>
-      <h2>PackList</h2>
-      <div>
-        <button type="button" @click="showPackListInput = !showPackListInput">
-          {{ showPackListInput ? "Close" : "Add" }}
-        </button>
-        <!-- List of Selected Food Items -->
-        <ul v-if="showPackListInput">
-          <input v-model="packList.name" type="text" name="packList" placeholder="PackList"/>
-          <select v-model="packList.type">
-            <option disabled value="">Select Type</option>
-            <option value="toiletries">Toiletries</option>
-            <option value="electronics">Electronics</option>
-            <option value="medication">Medication</option>
-          </select>
-          <button type="button" @click="addPackListItem" class="add">Add</button>
-          <!-- Display Food Items -->
-          <ul>
-            <li v-for="(item, index) in newTravelEntry.packList" :key="index">
-              <span>{{ item.name }} ({{ item.type }})</span>
-              <button @click="" class="like-button">
-                {{ item.checked ? "Unlike" : "Checked" }}
-              </button>
-            </li>
-          </ul>
-        </ul>
-      </div>
-      <h2>Hotels</h2>
-      <div>
-        <!-- Button to toggle the form -->
-        <button type="button" @click="showHotelsInput = !showHotelsInput">
-          {{ showHotelsInput ? "Close" : "Add Hotel" }}
+
+      <!-- This is the button to display the form for new entries -->
+
+        <button v-if="!showForm && !showTravelEntryTypeSelection" @click="toggleTravelEntryTypeSelection"
+                class="button1">Add Entry
         </button>
 
-        <!-- Form to add hotels -->
-        <div v-if="showHotelsInput">
-          <input
-              v-model="hotels.name"
-              type="text"
-              placeholder="Hotel Name"
-          />
-          <input
-              v-model="hotels.address"
-              type="text"
-              placeholder="Hotel Address"
-          />
-          <input
-              v-model="hotels.checkin"
-              type="text"
-              placeholder="Check-in Time (e.g., 12:00 PM)"
-          />
-          <input
-              v-model="hotels.checkout"
-              type="text"
-              placeholder="Check-out Time (e.g., 11:00 AM)"
-          />
-          <button type="button" @click="addHotelItem" class="add">
-            Add Hotel
-          </button>
+      <div class="button-container" v-if="!showForm && showTravelEntryTypeSelection">
+        <button
+            @click="newTravelEntry.type = 'Holidays'; showForm = true; showTravelEntryTypeSelection = false; resetNewEntry();"
+            class="button1">Holidays
+        </button>
+        <button
+            @click="newTravelEntry.type = 'Weekend Trips'; showForm = true; showTravelEntryTypeSelection = false; resetNewEntry();"
+            class="button1">Weekend Trips
+        </button>
+        <button @click="toggleTravelEntryTypeSelection" class="button1">Close</button>
+      </div>
+
+      <TravelEntryForm v-if="isEditing" @close="isEditing != isEditing" />
+
+
+      <!-- Here is the output of all entries -->
+      <div v-if="!showForm && !showTravelEntryTypeSelection">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Holidays</h2>
+        <div v-if="travelEntries.length">
+          <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+            <template v-for="(entry, index) in travelEntries">
+              <TravelElement v-if="entry.type === 'Holidays'"
+                             @edit="editEntry(index)"
+                             @delete="deleteEntry(index)"
+                             :entry="entry" />
+            </template>
+          </ul>
+
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mt-4">Weekend Trips</h2>
+          <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+            <template v-for="(entry, index) in travelEntries">
+              <TravelElement v-if="entry.type === 'Weekend Trips'"
+                             @edit="editEntry(index)"
+                             @delete="deleteEntry(index)"
+                             :entry="entry" />
+            </template>
+          </ul>
         </div>
-
-        <!-- Display List of Hotels -->
-        <ul>
-          <li v-for="(item, index) in newTravelEntry.hotels" :key="index">
-          <span>
-            <strong>Name:</strong> {{ item.name }} <br />
-            <strong>Address:</strong> {{ item.address }} <br />
-            <strong>Check-in:</strong> {{ item.checkin }} <br />
-            <strong>Check-out:</strong> {{ item.checkout }}
-          </span>
-            <button
-                @click=""
-                class="remove-button">
-              Remove
-            </button>
-          </li>
-        </ul>
-      </div>
-
-
-
-      <button v-if="!isEditing" type="submit" class="create">Create Entry</button>
-    </form>
-    <button @click="showForm = !showForm; resetNewEntry();" class="button1">Close Form</button>
-    <button v-if="isEditing" @click="updateEntry" class="button1">Save</button>
-  </div>
-
-  <!-- Display Error -->
-  <div v-if="error" class="error">
-    {{error}}
-  </div>
-
-  <!-- Here is the output of all entries -->
-  <div v-if="!showForm && !showTravelEntryTypeSelection">
-    <h2 class="entries">Holidays</h2>
-    <div v-if="travelEntries.length">
-        <div v-for="(entry, index) in travelEntries" class="entry-container">
-          <template v-if="entry.type == 'Holidays'">
-            <TravelElement :entry="entry"/>
-            <div class="button-container">
-              <button @click="editEntry(index)" class="edit">Edit</button>
-              <button @click="deleteEntry(index)" class="delete">Delete</button>
-            </div>
-          </template>
+        <div v-else>
+          <p class="text-sm text-gray-500 dark:text-gray-400">No travel entries found.</p>
         </div>
-      <h2 class="entries">Weekend Trips</h2>
-      <div v-for="(entry, index) in travelEntries" class="entry-container">
-        <template v-if="entry.type == 'Weekend Trips'">
-          <TravelElement :entry="entry"/>
-          <div class="button-container">
-            <button @click="editEntry(index)" class="edit">Edit</button>
-            <button @click="deleteEntry(index)" class="delete">Delete</button>
-          </div>
-        </template>
       </div>
-    </div>
-    <div v-else>
-      <p>No travel entries found.</p>
     </div>
   </div>
 </template>
