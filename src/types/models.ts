@@ -2,14 +2,14 @@ export type TravelEntry = {
     type: string,
     country: string,
     city: string,
-    activities: Array<Activities>,
+    activities: Array<Activity>,
     food: Array<Food>,
     packList: Array<PackList>,
 }
 
 type ActivitiesOption = "walking" | "beach" | "park" | "shopping" | "sightseeing" | "spa" | ""
 
-export type Activities = {
+export type Activity = {
     name: string,
     type: ActivitiesOption,
     liked: boolean,
