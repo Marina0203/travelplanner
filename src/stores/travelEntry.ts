@@ -27,6 +27,8 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
         type: '',
         checked: false,
     });
+    const error = ref('');
+    const showForm = ref(false);
 
     function loadTravelEntries() {
         const storedEntries = localStorage.getItem('travelEntries');
@@ -39,6 +41,7 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
     }
 
     function editTravelEntry(index: number) {
+        resetError();
         travelEntry.value = travelEntries.value[index];
     }
 
@@ -47,6 +50,7 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
     }
 
     function resetTravelEntry() {
+        error.value = '';
         travelEntry.value = {
             type: '',
             country: '',
@@ -58,21 +62,27 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
     }
 
     function createTravelEntry(newTravelEntry: TravelEntry) {
-        // Get existing entries from localStorage
-        const existingEntries = loadTravelEntries();
-
-        if (!existingEntries) {
+        if (!newTravelEntry.country || !newTravelEntry.city) {
+            error.value = 'Please enter a country and a city';
             return;
         }
 
+        resetError();
+
+        // Get existing entries from localStorage
+        const existingEntries = loadTravelEntries();
+
+        // Parse the existing entries or initialize an empty array
+        const travelEntries: TravelEntry[] = existingEntries ? JSON.parse(existingEntries) : [];
+
         // Check if the entry already exists based on a unique field, like country and city
-        const entryExists = travelEntries.value.some(entry =>
+        const entryExists = travelEntries.some(entry =>
             entry.country === travelEntry.value.country && entry.city === travelEntry.value.city
         );
 
         if (!entryExists) {
             // If the entry does not exist, add the new entry
-            travelEntries.value.push(travelEntry.value);
+            travelEntries.push(travelEntry.value);
 
             // Save the updated array back to localStorage
             localStorage.setItem('travelEntries', JSON.stringify(travelEntries));
@@ -80,8 +90,11 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
             // reset the current entry
             resetTravelEntry();
         } else {
-            console.log('Entry already exists');
+            // If the entry already exists, update the existing entry
+            updateTravelEntry(travelEntries.findIndex(entry =>
+                entry.country === travelEntry.value.country && entry.city === travelEntry.value.city))
         }
+        toggleShowForm();
     }
 
     function updateTravelEntry(index: number) {
@@ -179,12 +192,23 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
         travelEntry.value.type = type;
     }
 
+    function resetError() {
+        error.value = '';
+    }
+
+    function toggleShowForm() {
+        showForm.value = !showForm.value;
+    }
+
+
     return {
         travelEntries,
         travelEntry,
         activity,
         food,
         packList,
+        error,
+        showForm,
         setTravelEntries,
         setTravelEntry,
         editTravelEntry,
@@ -205,6 +229,8 @@ export const useTravelEntryStore = defineStore('travelEntryStore', () => {
         deletePackList,
         resetPackList,
         addPackListToTravelEntry,
-        loadTravelEntries
+        loadTravelEntries,
+        toggleShowForm,
+        resetError
     }
 })

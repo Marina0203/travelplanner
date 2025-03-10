@@ -10,16 +10,10 @@ const {
   editTravelEntry,
   deleteTravelEntry,
   resetTravelEntry,
-  loadTravelEntries
+  loadTravelEntries,
+  toggleShowForm
 } = useTravelEntryStore();
-const {travelEntries} = storeToRefs(useTravelEntryStore());
-
-// Reactive variables
-const showForm = ref(false);
-
-function toogleShowForm() {
-  showForm.value = !showForm.value;
-}
+const {travelEntries, showForm} = storeToRefs(useTravelEntryStore());
 
 onMounted(() => {
   loadTravelEntries();
@@ -33,7 +27,7 @@ onMounted(() => {
       <template v-if="!showForm">
         <!-- Travel Entry Create Action -->
         <section id="travel-entry-actions">
-          <button @click="toogleShowForm(); resetTravelEntry();">
+          <button @click="toggleShowForm(); resetTravelEntry();">
             Add Entry
           </button>
         </section>
@@ -46,7 +40,7 @@ onMounted(() => {
               <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                 <template v-for="(entry, index) in travelEntries">
                   <TravelElement v-if="entry.type === 'holiday'"
-                                 @edit="editTravelEntry(index); toogleShowForm()"
+                                 @edit="editTravelEntry(index); toggleShowForm()"
                                  @delete="deleteTravelEntry(index)"
                                  :entry="entry"/>
                 </template>
@@ -58,7 +52,7 @@ onMounted(() => {
               <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                 <template v-for="(entry, index) in travelEntries">
                   <TravelElement v-if="entry.type === 'trip'"
-                                 @edit="editTravelEntry(index); toogleShowForm()"
+                                 @edit="editTravelEntry(index); toggleShowForm()"
                                  @delete="deleteTravelEntry(index)"
                                  :entry="entry"/>
                 </template>
@@ -73,7 +67,7 @@ onMounted(() => {
 
       <!-- Travel Entry Create and Update Form -->
       <section v-if="showForm" id="travel-entry-form">
-        <TravelEntryForm @close="toogleShowForm"/>
+        <TravelEntryForm @close="toggleShowForm"/>
       </section>
     </div>
   </div>

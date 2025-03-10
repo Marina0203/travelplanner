@@ -11,8 +11,9 @@ const {
   deleteFood,
   setPackList,
   deletePackList,
+  toggleShowForm
 } = useTravelEntryStore();
-const {travelEntry, activity, food, packList} = storeToRefs(useTravelEntryStore());
+const {travelEntry, activity, food, packList, error, showForm} = storeToRefs(useTravelEntryStore());
 const showActivitiesInput = ref(false);
 const showFoodInput = ref(false);
 const showPackListInput = ref(false);
@@ -81,11 +82,14 @@ const isEmptyEntry = computed(() => {
   );
 });
 
-
 </script>
 
 <template>
   <section>
+    <div v-if="error"  class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+      <span class="font-medium">{{ error }}</span>
+    </div>
+
     <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">Create or Update Travel Entry</h2>
     <div class="mb-4">
       <label for="type" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Select a Type</label>
@@ -128,7 +132,7 @@ const isEmptyEntry = computed(() => {
           Activity Name
         </label>
         <input v-model="activity.name" type="text" id="activity_name" placeholder="Activity Name"
-               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white" required>
+               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
       </div>
       <select v-model="activity.type" id="activity_type"
               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
@@ -180,7 +184,7 @@ const isEmptyEntry = computed(() => {
           Food
         </label>
         <input v-model="food.name" type="text" id="activity_name" placeholder="Food"
-               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white" required>
+               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
       </div>
       <select v-model="food.type" id="activity_type"
               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
@@ -231,7 +235,7 @@ const isEmptyEntry = computed(() => {
           Packlist
         </label>
         <input v-model="packList.name" type="text" id="activity_name" placeholder="Packlist"
-               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white" required>
+               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
       </div>
       <select v-model="packList.type" id="packlist_type"
               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
@@ -267,12 +271,12 @@ const isEmptyEntry = computed(() => {
   </section>
 
   <section class="button-container my-16">
-    <button @click="createTravelEntry(travelEntry)"
-            type="submit"
+    <button @click="createTravelEntry(travelEntry);"
+            type="button"
             class="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
       {{ isEmptyEntry ? "Create Entry" : "Update Entry" }}
     </button>
-    <button @click="$emit('close')"
+    <button @click="toggleShowForm"
             type="button"
             class="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700">
       Close
