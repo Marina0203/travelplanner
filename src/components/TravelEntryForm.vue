@@ -59,6 +59,15 @@ function toggleShowFoodInput() {
 function toggleShowPackListInput() {
   showPackListInput.value = !showPackListInput.value;
 }
+function toggleLikeActivities(index: number) {
+  sortedActivities.value[index].liked = !sortedActivities.value[index].liked;
+}
+function toggleLikeFood(index: number) {
+  sortedFood.value[index].liked = !sortedFood.value[index].liked;
+}
+function toggleLikePackList(index: number) {
+  sortedPackList.value[index].checked = !sortedPackList.value[index].checked;
+}
 
 const isEmptyEntry = computed(() => {
   const entry = travelEntry.value;
@@ -147,6 +156,11 @@ const isEmptyEntry = computed(() => {
                   class="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
             Delete
           </button>
+          <button @click="toggleLikeActivities(index)"
+                  class="px-3 py-1 rounded-lg ml-2"
+                  :class="item.liked ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-black hover:bg-gray-400'">
+            {{ item.liked ? "👎🏻" : "❤️" }}
+          </button>
         </div>
       </li>
     </ul>
@@ -193,6 +207,11 @@ const isEmptyEntry = computed(() => {
                   class="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
             Delete
           </button>
+          <button @click="toggleLikeFood(index)"
+                  class="px-3 py-1 rounded-lg ml-2"
+                  :class="item.liked ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-black hover:bg-gray-400'">
+            {{ item.liked ? "👎🏻" : "❤️" }}
+          </button>
         </div>
       </li>
     </ul>
@@ -236,6 +255,11 @@ const isEmptyEntry = computed(() => {
           <button @click="deletePackList(index)"
                   class="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
             Delete
+          </button>
+          <button @click="toggleLikePackList(index)"
+                  class="px-3 py-1 rounded-lg ml-2"
+                  :class="item.checked ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-gray-300 text-black hover:bg-gray-400'">
+            {{ item.checked ? "❌" : "✅" }}
           </button>
         </div>
       </li>
