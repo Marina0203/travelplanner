@@ -7,6 +7,10 @@ const {
   createTravelEntry,
   setActivity,
   deleteActivity,
+  setFood,
+  deleteFood,
+  setPackList,
+  deletePackList,
 } = useTravelEntryStore();
 const {travelEntry, activity, food, packList} = storeToRefs(useTravelEntryStore());
 const showActivitiesInput = ref(false);
@@ -48,6 +52,14 @@ function toggleShowActivitiesInput() {
   showActivitiesInput.value = !showActivitiesInput.value;
 }
 
+function toggleShowFoodInput() {
+  showFoodInput.value = !showFoodInput.value;
+}
+
+function toggleShowPackListInput() {
+  showPackListInput.value = !showPackListInput.value;
+}
+
 const isEmptyEntry = computed(() => {
   const entry = travelEntry.value;
   return (
@@ -59,6 +71,8 @@ const isEmptyEntry = computed(() => {
       entry.packList.length === 0
   );
 });
+
+
 </script>
 
 <template>
@@ -91,10 +105,10 @@ const isEmptyEntry = computed(() => {
     </div>
   </section>
 
-  <!-- 🏄‍ Activities Section -->
+  <!-- Activities Section -->
   <section>
     <div class="flex justify-between">
-      <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">🏄‍ Activities</h2>
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">🏄‍🏝🌋Activities</h2>
       <button type="button" @click="toggleShowActivitiesInput" class="self-start">
         {{ showActivitiesInput ? "Close" : "Add" }}
       </button>
@@ -130,6 +144,96 @@ const isEmptyEntry = computed(() => {
         <span>{{ item.name }} ({{ item.type }})</span>
         <div class="flex pt-2">
           <button @click="deleteActivity(index)"
+                  class="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
+            Delete
+          </button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Food Section -->
+  <section>
+    <div class="flex justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">🍓🍫🍄Food</h2>
+      <button type="button" @click="toggleShowFoodInput" class="self-start">
+        {{ showFoodInput ? "Close" : "Add" }}
+      </button>
+    </div>
+    <ul v-if="showFoodInput" class="mt-4 grid grid-cols-3 gap-4 items-end">
+      <div>
+        <label for="food_name" class="sr-only block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Food
+        </label>
+        <input v-model="food.name" type="text" id="activity_name" placeholder="Food"
+               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white" required>
+      </div>
+      <select v-model="food.type" id="activity_type"
+              class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
+        <option disabled value="">Select Type</option>
+        <option value="Cafe">Cafe</option>
+        <option value="Restaurant">Restaurant</option>
+        <option value="Breakfast">Breakfast</option>
+        <option value="Street Food">Street Food</option>
+        <option value="Supermarket">Supermarket</option>
+      </select>
+      <div class="text-right flex items-center space-x-2">
+        <button type="button" @click="setFood(food)"
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+          Add
+        </button>
+      </div>
+    </ul>
+    <!-- Display Food -->
+    <ul class="my-8">
+      <li v-for="(item, index) in sortedFood" :key="index" class="flex items-center justify-between">
+        <span>{{ item.name }} ({{ item.type }})</span>
+        <div class="flex pt-2">
+          <button @click="deleteFood(index)"
+                  class="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
+            Delete
+          </button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Packlist Section -->
+  <section>
+    <div class="flex justify-between">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">📓🛍️🧳Packlist</h2>
+      <button type="button" @click="toggleShowPackListInput" class="self-start">
+        {{ showPackListInput ? "Close" : "Add" }}
+      </button>
+    </div>
+    <ul v-if="showPackListInput" class="mt-4 grid grid-cols-3 gap-4 items-end">
+      <div>
+        <label for="packlist_name" class="sr-only block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+          Packlist
+        </label>
+        <input v-model="packList.name" type="text" id="activity_name" placeholder="Packlist"
+               class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white" required>
+      </div>
+      <select v-model="packList.type" id="packlist_type"
+              class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:text-white">
+        <option disabled value="">Select Type</option>
+        <option value="Toiletries">Toiletries</option>
+        <option value="Electronics">Electronics</option>
+        <option value="Medication">Medication</option>
+      </select>
+      <div class="text-right flex items-center space-x-2">
+        <button type="button" @click="setPackList(packList)"
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+          Add
+        </button>
+      </div>
+    </ul>
+    <!-- Display Activities -->
+    <ul class="my-8">
+      <li v-for="(item, index) in sortedPackList" :key="index" class="flex items-center justify-between">
+        <span>{{ item.name }} ({{ item.type }})</span>
+        <div class="flex pt-2">
+          <button @click="deletePackList(index)"
                   class="px-3 py-1 text-white bg-red-600 rounded-lg hover:bg-red-700">
             Delete
           </button>
