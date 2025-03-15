@@ -22,11 +22,11 @@ onMounted(() => {
 
 <template>
   <div class="dark dark:bg-gray-800 dark:text-white h-full min-h-screen py-8">
-    <div class="container">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
 
       <template v-if="!showForm">
         <!-- Travel Entry Create Action -->
-        <section id="travel-entry-actions">
+        <section id="travel-entry-actions" class="text-center mb-6">
           <button @click="toggleShowForm(); resetTravelEntry();">
             Add Entry
           </button>
@@ -34,7 +34,7 @@ onMounted(() => {
 
         <!-- Output of Travel Entries -->
         <section id="travel-entries" class="py-8">
-          <div v-if="travelEntries.length">
+          <div v-if="travelEntries.length" class="space-y-6">
             <section id="travel-entries-holidays">
               <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Holidays</h2>
               <ul class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -59,14 +59,14 @@ onMounted(() => {
               </ul>
             </section>
           </div>
-          <div v-else>
+          <div v-else class="text-center">
             <p class="text-sm text-gray-500 dark:text-gray-400">No travel entries found.</p>
           </div>
         </section>
       </template>
 
       <!-- Travel Entry Create and Update Form -->
-      <section v-if="showForm" id="travel-entry-form">
+      <section v-if="showForm" id="travel-entry-form" class="max-w-lg mx-auto">
         <TravelEntryForm @close="toggleShowForm"/>
       </section>
     </div>

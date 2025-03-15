@@ -85,7 +85,7 @@ const isEmptyEntry = computed(() => {
 </script>
 
 <template>
-  <section>
+  <section class="px-4 sm:px-6">
     <div v-if="error"  class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
       <span class="font-medium">{{ error }}</span>
     </div>
@@ -101,7 +101,7 @@ const isEmptyEntry = computed(() => {
         <option value="trip">Weekend Trip</option>
       </select>
     </div>
-    <div class="grid gap-6 mb-6 grid-cols-2">
+    <div class="grid gap-6 mb-6 grid-cols-1 sm:grid-cols-2">
       <div>
         <label for="country"
                class="sr-only block mb-2 text-sm font-medium text-gray-900 dark:text-white">Country</label>
@@ -119,14 +119,14 @@ const isEmptyEntry = computed(() => {
   </section>
 
   <!-- Activities Section -->
-  <section>
+  <section class="px-4 sm:px-6">
     <div class="flex justify-between">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">🏄‍🏝🌋Activities</h2>
       <button type="button" @click="toggleShowActivitiesInput" class="self-start">
         {{ showActivitiesInput ? "Close" : "Add" }}
       </button>
     </div>
-    <ul v-if="showActivitiesInput" class="mt-4 grid grid-cols-3 gap-4 items-end">
+    <ul v-if="showActivitiesInput" class="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 items-center">
       <div>
         <label for="activity_name" class="sr-only block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Activity Name
@@ -146,7 +146,7 @@ const isEmptyEntry = computed(() => {
       </select>
       <div class="text-right flex items-center space-x-2">
         <button type="button" @click="setActivity(activity)"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 w-full sm:w-aut">
           Add
         </button>
       </div>
@@ -171,14 +171,14 @@ const isEmptyEntry = computed(() => {
   </section>
 
   <!-- Food Section -->
-  <section>
+  <section class="px-4 sm:px-6">
     <div class="flex justify-between">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">🍓🍫🍄Food</h2>
       <button type="button" @click="toggleShowFoodInput" class="self-start">
         {{ showFoodInput ? "Close" : "Add" }}
       </button>
     </div>
-    <ul v-if="showFoodInput" class="mt-4 grid grid-cols-3 gap-4 items-end">
+    <ul v-if="showFoodInput" class="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 items-center">
       <div>
         <label for="food_name" class="sr-only block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Food
@@ -197,7 +197,7 @@ const isEmptyEntry = computed(() => {
       </select>
       <div class="text-right flex items-center space-x-2">
         <button type="button" @click="setFood(food)"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 w-full sm:w-auto">
           Add
         </button>
       </div>
@@ -222,14 +222,14 @@ const isEmptyEntry = computed(() => {
   </section>
 
   <!-- Packlist Section -->
-  <section>
+  <section class="px-4 sm:px-6">
     <div class="flex justify-between">
       <h2 class="text-lg font-semibold text-gray-900 dark:text-white py-4">📓🛍️🧳Packlist</h2>
       <button type="button" @click="toggleShowPackListInput" class="self-start">
         {{ showPackListInput ? "Close" : "Add" }}
       </button>
     </div>
-    <ul v-if="showPackListInput" class="mt-4 grid grid-cols-3 gap-4 items-end">
+    <ul v-if="showPackListInput" class="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 items-center">
       <div>
         <label for="packlist_name" class="sr-only block mb-2 text-sm font-medium text-gray-900 dark:text-white">
           Packlist
@@ -246,7 +246,7 @@ const isEmptyEntry = computed(() => {
       </select>
       <div class="text-right flex items-center space-x-2">
         <button type="button" @click="setPackList(packList)"
-                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+                class="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 w-full sm:w-auto">
           Add
         </button>
       </div>
@@ -270,15 +270,15 @@ const isEmptyEntry = computed(() => {
     </ul>
   </section>
 
-  <section class="button-container my-16">
+  <section class="button-container my-16 flex flex-col sm:flex-row justify-center gap-4 my-12 px-4 sm:px-6">
     <button @click="createTravelEntry(travelEntry);"
             type="button"
-            class="px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
+            class="w-full sm:w-auto px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700">
       {{ isEmptyEntry ? "Create Entry" : "Update Entry" }}
     </button>
     <button @click="toggleShowForm"
             type="button"
-            class="px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700">
+            class="w-full sm:w-auto px-6 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700">
       Close
     </button>
   </section>
