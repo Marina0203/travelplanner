@@ -31,9 +31,3 @@ export type PackList = {
     checked: boolean,
 }
 
-export type Hotels = {
-    name: string,
-    address: string,
-    checkin: string,
-    checkout: string,
-}
